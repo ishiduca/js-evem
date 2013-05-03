@@ -7,7 +7,7 @@
 <body>
 <h1>evem - example</h1>
 <h2 style="height: 1/5em;">click &quot;start&quot;</h2>
-<form id="form" action"javascript:void(0)">
+<form id="form" action="javascript:void(0)">
   <button type="button" id="start">start</button>
 </form>
 </body>
@@ -90,9 +90,12 @@ window.onload = function () {
         document.getElementsByTagName('h2')[0].innerHTML = 'end';
     });
 
-    document.getElementById('start').addEventListener('click', function () {
+    document.getElementById('start').onclick = function () {
         timer.paused ? timer.start() : timer.pause();
-    });
+    };
+//    document.getElementById('start').addEventListener('click', function () {
+//        timer.paused ? timer.start() : timer.pause();
+//    });
 
 };
 </script>
