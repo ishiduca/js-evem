@@ -1,0 +1,15 @@
+{
+  "name": "evem",
+  "version": "0.0.0",
+  "description": "EventEmitter for browsers.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": "",
+  "keywords": [
+    "eventEmtitter"
+  ],
+  "author": "ishiduca@gmail.com",
+  "license": "BSD"
+}
