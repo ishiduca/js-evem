@@ -29,19 +29,22 @@
 
                 if (! this.evs || ! this.evs[ev]) return;
 
+                var buffer = [];
                 search(this.evs[ev], function (listener, i) {
+                    if (listener.atOnce === true) {
+                        buffer.push(listener);
+                        delete listener.atOnce;
+                    }
                     listener.apply(null, args);
                 });
 
                 var that = this;
-                if (this.removeEvs && this.removeEvs[ev]) {
-                    search(this.removeEvs[ev], function (listener) {
+                if (buffer.length) {
+                    search(buffer, function (listener) {
                         that.removeListener(ev, listener);
                     });
-
-                    if (! this.removeEvs[ev].length)
-                        delete this.removeEvs[ev];
                 }
+
             };
             ep.on = ep.addListener = function (ev, listener) {
                 errors(ev, 'string');
@@ -57,12 +60,8 @@
                 return this;
             };
             ep.once = function (ev, listener) {
+                listener.atOnce = true;
                 this.on(ev, listener);
-
-                if (! this.removeEvs) this.removeEvs = {};
-                if (! this.removeEvs[ev]) this.removeEvs[ev] = [];
-
-                this.removeEvs[ev].push(listener);
 
                 return this;
             };
@@ -85,14 +84,8 @@
                 return _listener;
             };
             ep.removeAllListeners = function (ev) {
-                if (typeof ev === 'string') {
-                  if (this.evs) delete this.evs[ev];
-                  if (this.removeEvs) delete this.removeEvs[ev];
-                }
-                if (ev === null || typeof ev === 'undefined') {
-                    this.evs = {};
-                    this.removeEvs = {};
-                }
+                if (typeof ev === 'string' && this.evs) delete this.evs[ev];
+                if (ev === null || typeof ev === 'undefined') this.evs = {};
             };
             //ep.setMaxListeners = function (n) {};
             ep.listeners = function (ev) {
