@@ -1,0 +1,25 @@
+<!doctype html>
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="../node_modules/qunitjs/qunit/qunit.css" />
+<script src="../node_modules/qunitjs/qunit/qunit.js"></script>
+<script src="../node_modules/qunit-tap/lib/qunit-tap.js"></script>
+<script>
+qunitTap(QUnit, function () { console.log.apply(console, arguments) });
+//QUnit.config.autostart = false;
+var is = QUnit.strictEqual;
+</script>
+
+<!-- テストを受けるモジュール -->
+<script src="../index.js"></script>
+<!-- テストコードを記載した .jsファイル -->
+<script src="./00.js"></script>
+<script src="./01.js"></script>
+<title>Mod Testing</title>
+</head>
+<body>
+<div id="qunit"></div>
+<div id="qunit-fixture"></div>
+</body>
+
+

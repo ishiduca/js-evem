@@ -1,15 +1,18 @@
 {
-  "name": "evem",
-  "version": "0.0.0",
-  "description": "EventEmitter for browsers.",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": "",
-  "keywords": [
-    "eventEmtitter"
-  ],
-  "author": "ishiduca@gmail.com",
-  "license": "BSD"
+    "name": "evem",
+    "version": "0.0.1",
+    "author": "ishiduca@gmail.com",
+    "description": "EventEmitter for browsers.",
+    "main": "./index.js",
+    "devDependencies": {
+        "benchmark": "1.0.*",
+        "qunitjs": "1.10.*",
+        "qunit-tap": "1.4.*",
+        "power-assert": "0.1.*"
+    },
+    "keywords": [
+        "events",
+        "eventEmitter"
+    ],
+    "licence": "MIT"
 }

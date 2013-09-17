@@ -1,6 +1,8 @@
 var path     = require('path')
-,   QUnit    = require(path.join( __dirname, './qunit-1.10.0'))
-,   qunitTap = require(path.join( __dirname, './qunit-tap')).qunitTap
+//,   QUnit    = require(path.join( __dirname, './qunit-1.10.0'))
+//,   qunitTap = require(path.join( __dirname, './qunit-tap'))
+,   QUnit    = require('qunitjs')
+,   qunitTap = require('qunit-tap')
 ;
 
 qunitTap(QUnit, console.log.bind(console));
@@ -13,6 +15,8 @@ QUnit.config.updateRate = 0;
 
     global[keyword] = QUnit[keyword];
 });
+
+global.is = QUnit.strictEqual;
 
 module.exports.QUnit = QUnit;
 
