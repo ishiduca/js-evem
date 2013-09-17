@@ -6,24 +6,40 @@ another EventEmitter for the browser
 
 ```js
 <script src="path/to/evem/index.js"></script>
+function Timer (finish) {
+    EventEmitter.call(this)
+    this.finish = finish
+}
 
-var emitter = new events.EventEmitter;
-var amount = 0;
-var count  = 0;
+(function inherits (T, E) {
+    var F = function () {}
+    F.prototype = E.prototype
+    T.prototype = new F
+})(Timer, EventEmitter)
 
-emitter.on('data', function (a, b, c) {
-    amount += (a + b + c);
-    count++;
-});
+Timer.prototype.start = function () {
+    var that = this
+    this.id  = setInterval(function () {
+        that.finish ? that.emit('data', (that.finish -= 1))
+                    : that.stop()
+    }, 1000)
+}
+Timer.prototype.stop = function () {
+    clearInterval(this.id)
+    this.emit('end')
+}
 
-emitter.once('end', function () {
-    console.log('Amount: ' + amount.toString());
-    console.log('Count : ' + count.toString());
-    console.log('Amount / Count: ' + (amount / count).toString());
-});
+function puts (str) {
+    document.querySelector('#timer').innerHTML = String(str)
+}
 
-emitter.emit('data', 1, 2, 3);
-emitter.emit('end');
+var timer = new Timer(10)
+
+timer.on('data', puts)
+.once('end', function () {
+    puts("!! finish")
+})
+.start()
 
 ```
 
