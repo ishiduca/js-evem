@@ -1,0 +1,7 @@
+.git*
+node_modules/
+t/
+run-phantom.js
+test.sh
+gen_package.js
+package.yaml
