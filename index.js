@@ -1,114 +1,145 @@
-! function (define) {
-    define([], function () {
-        "use strict";
+(function (global) {
+    'use strict'
 
-        function search (arry, cb) {
-            var i = 0, len = arry.length;
-            for (; i < len; i++) {
-                if (cb(arry[i], i) === true) return [arry[i], i];
+    var isBrowser = !! global.self
+    var isWorker  = !! global.WorkerLocation
+    var isNodeJS  = !! global.global
+
+    function EventEmitter () {
+        this.init()
+    }
+
+    var EP = EventEmitter.prototype
+    
+    EP.init = function () {
+        this.init_property()
+//        this.maxListeners = 10
+        return this
+    }
+
+    EP.init_property = function () {
+        this.events = {}
+        this.onceEvents = {}
+    }
+
+    EP._push = function (ev, listener, isOnce) {
+        if (typeof ev !== 'string')
+            throw new TypeError('"event" must be "string"')
+        if (typeof listener !== 'function')
+            throw new TypeError('"listener" must be "function"')
+
+        this.emit('newListener', listener)
+
+        this.events     || (this.events = {})
+        this.events[ev] || (this.events[ev] = [])
+        this.events[ev].push(listener)
+
+        if (! isOnce) return
+
+        this.onceEvents || (this.onceEvents = {})
+        this.onceEvents[ev] || (this.onceEvents[ev] = [])
+        this.onceEvents[ev].push(this.events[ev].length - 1)
+    }
+
+    EP.on = EP.addListener = function (ev, listener) {
+        this._push(ev, listener)
+        return this
+    }
+
+    EP.once = function (ev, listener) {
+        this._push(ev, listener, true)
+        return this
+    }
+
+    EP.emit = function () {
+        var args = [].slice.apply(arguments)
+        var ev   = args.shift()
+        var existsListener = false
+
+        if (! this.events) return existsListener
+        if (! this.events[ev]) return existsListener
+
+        var i = 0, evs = this.events[ev], len = evs.length
+          , listener, existsListener = 0
+        ;for (; i < len; i++) {
+            listener = evs[i]
+            if (typeof listener === 'function') {
+                listener.apply(null, args)
+                existsListener = true
             }
-            return null;
         }
 
-        var events = {};
-        events.EventEmitter = function () {};
+        if (this.onceEvents && this.onceEvents[ev]) {
+            var i = 0, evs = this.onceEvents[ev], len = evs.length
+              , rmindex, listener
+            ;for (; i < len; i++) {
+                rmindex = evs[i]
+                listener = this.events[ev][rmindex]
+                this.events[ev][rmindex] = null
+                this.emit('removeListener', listener)
+            }
+        }
 
-        (function (ep) {
-            var errors = function (arg, type) {
-                var mes = {
-                    "string": '1st argument(eventname) must be "string"'
-                  , "function": '2nd argument(listener) must be "function"'
-                };
-                if (typeof arg !== type) throw new TypeError(mes[type]);
-            };
+        return existsListener
+    }
 
-            ep.emit = function (/*ev*/) {
-                errors(arguments[0], 'string');
-                var args = Array.prototype.slice.apply(arguments);
-                var ev = args.shift();
+    EP.removeListener = function (ev, listener) {
+        if (typeof ev !== 'string')
+            throw new TypeError('"ev" must be "string"')
+        if (typeof listener !== 'function')
+            throw new TypeError('"listener" must be "function"')
 
-                if (! this.evs || ! this.evs[ev]) return;
+        if (! this.events) return this
+        if (! this.events[ev]) return this
 
-                var buffer = [];
-                search(this.evs[ev], function (listener, i) {
-                    if (listener.atOnce === true) {
-                        buffer.push(listener);
-                        delete listener.atOnce;
-                    }
-                    listener.apply(null, args);
-                });
+        var i = 0, evs = this.events[ev], len = evs.length
+          , _listener
+        for (; i < len; i++) {
+            _listener = evs[i]
+            if (_listener === listener) {
+                this.events[ev][i] = null
+                this.emit('removeListener', listener)
+            }
+        }
 
-                var that = this;
-                if (buffer.length) {
-                    search(buffer, function (listener) {
-                        that.removeListener(ev, listener);
-                    });
-                }
+        return this
+    }
 
-            };
-            ep.on = ep.addListener = function (ev, listener) {
-                errors(ev, 'string');
-                errors(listener, 'function');
+    EP.listeners = function (ev) {
+        if (typeof ev !== 'string')
+            throw new TypeError('"ev" must be "string"')
 
-                if (! this.evs) this.evs = {};
-                if (! this.evs[ev]) this.evs[ev] = [];
+        var list = []
 
-                this.evs[ev].push(listener);
+        if (! this.events) return list
+        if (! this.events[ev]) return list
 
-                this.emit('newListener', ev, listener);
+        var i = 0, evs = this.events[ev], len = evs.length
+        for (; i < len; i++) {
+            if (typeof evs[i] === 'function') list.push(evs[i])
+        }
 
-                return this;
-            };
-            ep.once = function (ev, listener) {
-                listener.atOnce = true;
-                this.on(ev, listener);
+        return list
+    }
 
-                return this;
-            };
-            ep.removeListener = function (ev, listener) {
-                errors(ev, 'string');
-                errors(listener, 'function');
+    EP.removeAllListeners = function (ev) {
+        if (! ev) {
+            this.init_property()
+            return this
+        }
 
-                if (! this.evs || ! this.evs[ev]) return null;
+        if (this.events && this.events[ev]) this.events[ev] = []
+        if (this.onceEvents && this.onceEvents[ev]) this.onceEvents = []
 
-                var index = search(this.evs[ev], function (_listener, i) {
-                    return _listener === listener;
-                });
-
-                if (index === null) return null;
-
-                var _listener = this.evs[ev].splice(index[1], 1)[0];
-
-                this.emit('removeListener', ev, _listener);
-
-                return _listener;
-            };
-            ep.removeAllListeners = function (ev) {
-                if (typeof ev === 'string' && this.evs) delete this.evs[ev];
-                if (ev === null || typeof ev === 'undefined') this.evs = {};
-            };
-            //ep.setMaxListeners = function (n) {};
-            ep.listeners = function (ev) {
-                errors(ev, 'string');
-
-                return (this.evs && this.evs[ev]) ? this.evs[ev] : null;
-            };
-        })(events.EventEmitter.prototype);
-
-        return events;
-    });
-}(
-// AMD - RequireJS
-    ('function' === typeof define &&
-     'function' === typeof requirejs)
-   ? define
-// CommonJS - node.js
-     : ('undefined' !== typeof module &&
-        module.exports &&
-        'function' === typeof require)
-     ? function (deps, fact) { module.exports = fact() }
- // window === this
-   : function (deps, fact) { this['events'] = fact() }
-);
+        return this
+    }
 
 
+    if (isNodeJS) {
+        module.exports.EventEmitter = EventEmitter
+    }
+    else {
+        global.EventEmitter = EventEmitter
+    }
+
+})(this.self || global)
