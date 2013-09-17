@@ -5,4 +5,5 @@
 npm-debug.log
 gen_package.js
 package.yaml
+run-phantom.js
 node_modules
