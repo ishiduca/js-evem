@@ -115,7 +115,7 @@
 
     EP.removeAllListeners = function (ev) {
         if (! ev) {
-            this.prototype.constructor()
+            this.constructor()
             return this
         }
 

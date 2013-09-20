@@ -11,12 +11,12 @@ function Timer (finish) {
     this.finish = finish
 }
 
-(function inherits (T, E) {
-    var F = function () {}
-    F.prototype = E.prototype
-    T.prototype = new F
-})(Timer, EventEmitter)
+Timer.prototype = function (F) {
+    F.prototype = EventEmitter.prototype
+    return new F
+}(function () {})
 
+Timer.prototype.constructor = Timer
 Timer.prototype.start = function () {
     var that = this
     this.id  = setInterval(function () {
