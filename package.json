@@ -1,18 +1,19 @@
 {
-    "name": "evem",
-    "version": "0.0.1",
-    "author": "ishiduca@gmail.com",
-    "description": "EventEmitter for browsers.",
-    "main": "./index.js",
-    "devDependencies": {
-        "benchmark": "1.0.*",
-        "qunitjs": "1.10.*",
-        "qunit-tap": "1.4.*",
-        "power-assert": "0.1.*"
-    },
-    "keywords": [
-        "events",
-        "eventEmitter"
-    ],
-    "licence": "MIT"
+   "keywords" : [
+      "events",
+      "eventEmitter"
+   ],
+   "licence" : "MIT",
+   "devDependencies" : {
+      "qunit-tap" : "1.4.*",
+      "power-assert" : "0.1.*",
+      "benchmark" : "1.0.*",
+      "qunitjs" : "1.10.*"
+   },
+   "version" : "0.0.2",
+   "name" : "evem",
+   "author" : "ishiduca@gmail.com",
+   "description" : "EventEmitter for browsers.",
+   "main" : "./index.js"
 }
+

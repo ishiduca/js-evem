@@ -6,21 +6,12 @@
     var isNodeJS  = !! global.global
 
     function EventEmitter () {
-        this.init()
-    }
-
-    var EP = EventEmitter.prototype
-    
-    EP.init = function () {
-        this.init_property()
-//        this.maxListeners = 10
+        this.events = {}
+        this.onceEvents = {}
         return this
     }
 
-    EP.init_property = function () {
-        this.events = {}
-        this.onceEvents = {}
-    }
+    var EP = EventEmitter.prototype
 
     EP._push = function (ev, listener, isOnce) {
         if (typeof ev !== 'string')
@@ -64,7 +55,7 @@
         ;for (; i < len; i++) {
             listener = evs[i]
             if (typeof listener === 'function') {
-                listener.apply(null, args)
+                listener.apply(this, args)
                 existsListener = true
             }
         }
@@ -124,7 +115,7 @@
 
     EP.removeAllListeners = function (ev) {
         if (! ev) {
-            this.init_property()
+            this.prototype.constructor()
             return this
         }
 
